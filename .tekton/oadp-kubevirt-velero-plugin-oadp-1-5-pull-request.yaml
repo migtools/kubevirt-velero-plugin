@@ -249,7 +249,7 @@ spec:
         - io.k8s.description=OpenShift API for Data Protection - Kubevirt Velero Plugin
         - io.k8s.display-name=OpenShift API for Data Protection Kubevirt Velero Plugin
         - io.openshift.build.commit.branch=release-v0.8
-        - io.openshift.build.source-location=https://github.com/kubevirt/kubevirt-velero-plugin
+        - io.openshift.build.source-location=https://github.com/migtools/kubevirt-velero-plugin
         - io.openshift.tags=migration
         - maintainer=OpenShift API for Data Protection Team <oadp-team@redhat.com>
         - name=oadp/oadp-kubevirt-velero-plugin-rhel9
@@ -631,7 +631,7 @@ spec:
         - build-date=$SOURCE_DATE
         - short-commit=$(tasks.clone-repository.results.short-commit)
         - io.openshift.build.commit.id=$(tasks.clone-repository.results.commit)
-        - io.openshift.build.commit.url=https://github.com/kubevirt/kubevirt-velero-plugin/commit/$(tasks.clone-repository.results.commit)
+        - io.openshift.build.commit.url=https://github.com/migtools/kubevirt-velero-plugin/commit/$(tasks.clone-repository.results.commit)
         - release=$ACTUAL_DATE_EPOCH
       - name: source-date-epoch
         value: $(tasks.clone-repository.results.commit-timestamp)
