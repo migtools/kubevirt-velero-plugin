@@ -7,9 +7,8 @@ metadata:
     build.appstudio.redhat.com/target_branch: '{{target_branch}}'
     pipelinesascode.tekton.dev/cancel-in-progress: "false"
     pipelinesascode.tekton.dev/max-keep-runs: "3"
-    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch
-      == "release-v0.8"
-  creationTimestamp: null
+    pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch == "release-v0.8"
+  creationTimestamp:
   labels:
     appstudio.openshift.io/application: oadp-1-5
     appstudio.openshift.io/component: oadp-kubevirt-velero-plugin-oadp-1-5
@@ -26,9 +25,16 @@ spec:
     value: quay.io/redhat-user-workloads/ocp-art-tenant/oadp-kubevirt-velero-plugin-oadp-1-5:{{revision}}
   - name: build-platforms
     value:
+    - linux/arm64
+    - linux/ppc64le
+    - linux/s390x
     - linux/x86_64
   - name: dockerfile
-    value: Dockerfile.rhmtc
+    value: Dockerfile.oadp
+  - name: hermetic
+    value: 'true'
+  - name: prefetch-input
+    value: '[{"type": "gomod", "path": "."}, {"type": "rpm", "path": "hack/build/"}]'
   pipelineSpec:
     description: |
       This pipeline is ideal for building multi-arch container images from a Containerfile while maintaining trust after pipeline customization.
@@ -45,7 +51,7 @@ spec:
         - name: name
           value: show-sbom
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-show-sbom:0.1@sha256:1b1df4da95966d08ac6a5b8198710e09e68b5c2cdc707c37d9d19769e65884b2
+          value: quay.io/konflux-ci/tekton-catalog/task-show-sbom:0.1@sha256:002f7c8c1d2f9e09904035da414aba1188ae091df0ea9532cd997be05e73d594
         - name: kind
           value: task
         resolver: bundles
@@ -61,13 +67,11 @@ spec:
       name: output-image
       type: string
     - default: .
-      description: Path to the source code of an application's component from where
-        to build image.
+      description: Path to the source code of an application's component from where to build image.
       name: path-context
       type: string
     - default: Dockerfile
-      description: Path to the Dockerfile inside the context specified by parameter
-        path-context
+      description: Path to the Dockerfile inside the context specified by parameter path-context
       name: dockerfile
       type: string
     - default: "false"
@@ -87,8 +91,7 @@ spec:
       name: prefetch-input
       type: string
     - default: ""
-      description: Image tag expiration time, time values could be something like
-        1h, 2d, 3w for hours, days, and weeks, respectively.
+      description: Image tag expiration time, time values could be something like 1h, 2d, 3w for hours, days, and weeks, respectively.
       name: image-expires-after
       type: string
     - default: "false"
@@ -108,14 +111,12 @@ spec:
       name: build-args-file
       type: string
     - default: "false"
-      description: Whether to enable privileged mode, should be used only with remote
-        VMs
+      description: Whether to enable privileged mode, should be used only with remote VMs
       name: privileged-nested
       type: string
     - default:
       - linux/x86_64
-      description: List of platforms to build the container images on. The available
-        set of values is determined by the configuration of the multi-platform-controller.
+      description: List of platforms to build the container images on. The available set of values is determined by the configuration of the multi-platform-controller.
       name: build-platforms
       type: array
     results:
@@ -166,7 +167,7 @@ spec:
         - name: name
           value: git-clone-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-git-clone-oci-ta:0.1@sha256:d35e5d501cb5f5f88369511f76249857cb5ac30250e1dcf086939321964ff6b9
+          value: quay.io/konflux-ci/tekton-catalog/task-git-clone-oci-ta:0.1@sha256:0e512b12775b2bcc4eb47bb34b7a2db2e91c3ceef04b2f2487fa421032d8859a
         - name: kind
           value: task
         resolver: bundles
@@ -180,6 +181,8 @@ spec:
         workspace: git-auth
     - name: prefetch-dependencies
       params:
+      - name: dev-package-managers
+        value: 'true'
       - name: input
         value: $(params.prefetch-input)
       - name: SOURCE_ARTIFACT
@@ -238,6 +241,21 @@ spec:
         value: $(tasks.prefetch-dependencies.results.CACHI2_ARTIFACT)
       - name: IMAGE_APPEND_PLATFORM
         value: "true"
+      - name: LABELS
+        value:
+        - $(tasks.generate-labels.results.labels[*])
+        - License=Apache License 2.0
+        - com.redhat.component=oadp-kubevirt-velero-plugin-container
+        - io.k8s.description=OpenShift API for Data Protection - Kubevirt Velero Plugin
+        - io.k8s.display-name=OpenShift API for Data Protection Kubevirt Velero Plugin
+        - io.openshift.build.commit.branch=release-v0.8
+        - io.openshift.build.source-location=https://github.com/migtools/kubevirt-velero-plugin
+        - io.openshift.tags=migration
+        - maintainer=OpenShift API for Data Protection Team <oadp-team@redhat.com>
+        - name=oadp/oadp-kubevirt-velero-plugin-rhel9
+        - summary=OpenShift API for Data Protection - Kubevirt Velero Plugin
+        - vendor=Red Hat, Inc.
+        - version=1.5.1
       runAfter:
       - prefetch-dependencies
       taskRef:
@@ -245,7 +263,7 @@ spec:
         - name: name
           value: buildah-remote-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-buildah-remote-oci-ta:0.4@sha256:01683db105fe4e6577c6df87686588bfbf0949cd40f8cb01d69c2ad834e9b9cf
+          value: quay.io/konflux-ci/tekton-catalog/task-buildah-remote-oci-ta:0.4@sha256:28d8a4f7c1ff6e8bb09d89b06c7c8769093ac7e9325ad9edfe7b2d766f643b87
         - name: kind
           value: task
         resolver: bundles
@@ -274,7 +292,7 @@ spec:
         - name: name
           value: build-image-index
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-build-image-index:0.1@sha256:846dc9975914f31380ec2712fdbac9df3b06c00a9cc7df678315a7f97145efc2
+          value: quay.io/konflux-ci/tekton-catalog/task-build-image-index:0.1@sha256:3cf3dcc0bf7b674b940063b4d55e41fe7d43636a1d82572e3850228aa5350fa8
         - name: kind
           value: task
         resolver: bundles
@@ -298,7 +316,7 @@ spec:
         - name: name
           value: source-build-oci-ta
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-source-build-oci-ta:0.2@sha256:b424894fc8e806c12658daa565b835fd2d66e7f7608afc47529eb7b410f030d7
+          value: quay.io/konflux-ci/tekton-catalog/task-source-build-oci-ta:0.2@sha256:f0784e8e0e396f40a6523693825b5966c3c615ba3d342350165e83cb72a24ef7
         - name: kind
           value: task
         resolver: bundles
@@ -366,7 +384,7 @@ spec:
         - name: name
           value: ecosystem-cert-preflight-checks
         - name: bundle
-          value: quay.io/konflux-ci/tekton-catalog/task-ecosystem-cert-preflight-checks:0.2@sha256:a6df9cc4b7792fbe53764a0033d7a914f256e81ce5dc9e3fd4f23d141461a6e6
+          value: quay.io/konflux-ci/tekton-catalog/task-ecosystem-cert-preflight-checks:0.2@sha256:95ca11d147ee97d98f495477e9f42afe94ba3f869fc81c4e7b241ebd21e7395f
         - name: kind
           value: task
         resolver: bundles
@@ -547,6 +565,11 @@ spec:
         value: $(tasks.build-image-index.results.IMAGE_URL)
       - name: IMAGE_DIGEST
         value: $(tasks.build-image-index.results.IMAGE_DIGEST)
+      - name: ADDITIONAL_TAGS
+        value:
+        - '1.5'
+        - '1.5.1'
+        - 'latest'
       runAfter:
       - build-image-index
       taskRef:
@@ -603,6 +626,28 @@ spec:
         operator: in
         values:
         - "false"
+    - name: generate-labels
+      params:
+      - name: label-templates
+        value:
+        - build-date=$SOURCE_DATE
+        - short-commit=$(tasks.clone-repository.results.short-commit)
+        - io.openshift.build.commit.id=$(tasks.clone-repository.results.commit)
+        - io.openshift.build.commit.url=https://github.com/migtools/kubevirt-velero-plugin/commit/$(tasks.clone-repository.results.commit)
+        - release=$ACTUAL_DATE_EPOCH
+      - name: source-date-epoch
+        value: $(tasks.clone-repository.results.commit-timestamp)
+      runAfter:
+      - clone-repository
+      taskRef:
+        params:
+        - name: name
+          value: generate-labels
+        - name: bundle
+          value: quay.io/konflux-ci/tekton-catalog/task-generate-labels:0.1@sha256:e1f4746dc33206a17867ead8f5c82a569cd925d352a19d108f205f54efc5589d
+        - name: kind
+          value: task
+        resolver: bundles
     workspaces:
     - name: git-auth
       optional: true
