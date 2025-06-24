@@ -10,7 +10,7 @@ metadata:
     pipelinesascode.tekton.dev/on-cel-expression: event == "push" && target_branch == "release-v0.8"
   creationTimestamp:
   labels:
-    appstudio.openshift.io/application: oadp-kubevirt-velero-plugin
+    appstudio.openshift.io/application: oadp-1-5
     appstudio.openshift.io/component: oadp-kubevirt-velero-plugin-oadp-1-5
     pipelines.appstudio.openshift.io/type: build
   name: oadp-kubevirt-velero-plugin-oadp-1-5-on-push
@@ -25,6 +25,9 @@ spec:
     value: quay.io/redhat-user-workloads/ocp-art-tenant/oadp-kubevirt-velero-plugin-oadp-1-5:{{revision}}
   - name: build-platforms
     value:
+    - linux/arm64
+    - linux/ppc64le
+    - linux/s390x
     - linux/x86_64
   - name: dockerfile
     value: Dockerfile.oadp
