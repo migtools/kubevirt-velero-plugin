@@ -92,7 +92,7 @@ replace (
 	github.com/kubernetes-csi/external-snapshotter/v2 => github.com/kubernetes-csi/external-snapshotter/v2 v2.2.0-rc4
 
 	github.com/openshift/api => github.com/openshift/api v0.0.0-20230406152840-ce21e3fe5da2
-	github.com/openshift/client-go => github.com/openshift/client-go v0.0.0-20230324103026-3f1513df25e0
+	github.com/openshift/client-go => github.com/openshift/client-go 7b2007868c76
 	k8s.io/api => k8s.io/api v0.26.4
 	k8s.io/client-go => k8s.io/client-go v0.26.4
 	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20230501164219-8b0f38b5fd1f
