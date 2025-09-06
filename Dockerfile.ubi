@@ -1,0 +1,19 @@
+FROM --platform=$BUILDPLATFORM quay.io/konveyor/builder:ubi9-latest AS builder
+ARG BUILDPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+
+ENV GOPATH=$APP_ROOT
+
+COPY . $APP_ROOT/src/kubevirt-velero-plugin
+
+WORKDIR $APP_ROOT/src/kubevirt-velero-plugin
+
+RUN CGO_ENABLED=0 GOOS=${TARGETOS:-linux} GOARCH=${TARGETARCH} go build -v -o $APP_ROOT/bin/kubevirt-velero-plugin -mod=mod .
+
+FROM registry.access.redhat.com/ubi9-minimal
+RUN mkdir /plugins
+COPY --from=builder /opt/app-root/bin/kubevirt-velero-plugin /plugins/
+USER 65534:65534
+ENTRYPOINT ["/bin/bash", "-c", "cp /plugins/* /target/."]
+
