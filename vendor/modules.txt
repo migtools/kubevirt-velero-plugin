@@ -248,8 +248,8 @@ github.com/spf13/pflag
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/assert/yaml
-# github.com/vmware-tanzu/velero v1.18.0 => github.com/openshift/velero v0.10.2-0.20260413161955-ea34d4d90057
-## explicit; go 1.25.7
+# github.com/vmware-tanzu/velero v1.18.0 => github.com/openshift/velero v0.10.2-0.20260504131308-8373027be9ec
+## explicit; go 1.25.0
 github.com/vmware-tanzu/velero/internal/credentials
 github.com/vmware-tanzu/velero/internal/resourcepolicies
 github.com/vmware-tanzu/velero/pkg/apis/velero/shared
@@ -327,8 +327,8 @@ golang.org/x/oauth2/internal
 # golang.org/x/sync v0.19.0
 ## explicit; go 1.24.0
 golang.org/x/sync/errgroup
-# golang.org/x/sys v0.40.0
-## explicit; go 1.24.0
+# golang.org/x/sys v0.42.0
+## explicit; go 1.25.0
 golang.org/x/sys/plan9
 golang.org/x/sys/unix
 golang.org/x/sys/windows
@@ -1125,4 +1125,4 @@ sigs.k8s.io/yaml/goyaml.v2
 # k8s.io/api => k8s.io/api v0.33.5
 # k8s.io/client-go => k8s.io/client-go v0.33.5
 # k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff
-# github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260413161955-ea34d4d90057
+# github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260504131308-8373027be9ec
