@@ -253,7 +253,7 @@ github.com/spf13/pflag
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/assert/yaml
-# github.com/vmware-tanzu/velero v1.18.0 => github.com/openshift/velero v0.10.2-0.20260521131557-d6cee0cc6900
+# github.com/vmware-tanzu/velero v1.18.0 => github.com/openshift/velero v0.10.2-0.20260601183324-af1b4409d3db
 ## explicit; go 1.25.0
 github.com/vmware-tanzu/velero/internal/credentials
 github.com/vmware-tanzu/velero/internal/resourcepolicies
@@ -1149,4 +1149,4 @@ sigs.k8s.io/yaml/goyaml.v2
 # k8s.io/api => k8s.io/api v0.33.5
 # k8s.io/client-go => k8s.io/client-go v0.33.5
 # k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff
-# github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260521131557-d6cee0cc6900
+# github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260601183324-af1b4409d3db
