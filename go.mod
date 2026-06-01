@@ -113,4 +113,4 @@ replace (
 	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff
 )
 
-replace github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260521131557-d6cee0cc6900
+replace github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260601183324-af1b4409d3db
