@@ -101,6 +101,24 @@ const (
 	// ExcludeFromBackupLabel is the label to exclude k8s resource from backup,
 	// even if the resource contains a matching selector label.
 	ExcludeFromBackupLabel = "velero.io/exclude-from-backup"
+
+	// SkipFromBackupAnnotation is the annotation used by internal BackupItemActions
+	// to indicate that a resource should be skipped from backup,
+	// even if it doesn't have the ExcludeFromBackupLabel.
+	// This is used in cases where we want to skip backup of a resource based on some logic in a plugin.
+	//
+	// Notice: SkipFromBackupAnnotation's priority is higher than MustIncludeAdditionalItemAnnotation.
+	// If SkipFromBackupAnnotation is set, the resource will be skipped even if MustIncludeAdditionalItemAnnotation is set.
+	SkipFromBackupAnnotation = "velero.io/skip-from-backup"
+
+	// defaultVGSLabelKey is the default label key used to group PVCs under a VolumeGroupSnapshot
+	DefaultVGSLabelKey = "velero.io/volume-group"
+
+	// PVBLabel is the label key used to identify the pvb for pvb pod
+	PVBLabel = "velero.io/pod-volume-backup"
+
+	// PVRLabel is the label key used to identify the pvb for pvr pod
+	PVRLabel = "velero.io/pod-volume-restore"
 )
 
 type AsyncOperationIDPrefix string
@@ -123,9 +141,13 @@ const (
 	VolumeSnapshotRestoreSize                       = "velero.io/csi-volumesnapshot-restore-size"
 	DriverNameAnnotation                            = "velero.io/csi-driver-name"
 	VSCDeletionPolicyAnnotation                     = "velero.io/csi-vsc-deletion-policy"
+	VolumeGroupSnapshotHandleAnnotation             = "velero.io/csi-volumegroupsnapshot-handle"
 	VolumeSnapshotClassSelectorLabel                = "velero.io/csi-volumesnapshot-class"
 	VolumeSnapshotClassDriverBackupAnnotationPrefix = "velero.io/csi-volumesnapshot-class"
 	VolumeSnapshotClassDriverPVCAnnotation          = "velero.io/csi-volumesnapshot-class"
+
+	// https://kubernetes.io/zh-cn/docs/concepts/storage/volume-snapshot-classes/
+	VolumeSnapshotClassKubernetesAnnotation = "snapshot.storage.kubernetes.io/is-default-class"
 
 	// There is no release w/ these constants exported. Using the strings for now.
 	// CSI Annotation volumesnapshotclass
@@ -148,4 +170,13 @@ const (
 
 	// DataUploadNameAnnotation is the label key for the DataUpload name
 	DataUploadNameAnnotation = "velero.io/data-upload-name"
+
+	// Label used on VolumeGroupSnapshotClass to mark it as Velero's default for a CSI driver
+	VolumeGroupSnapshotClassDefaultLabel = "velero.io/csi-volumegroupsnapshot-class"
+
+	// Annotation on PVC to override the VGS class to use
+	VolumeGroupSnapshotClassAnnotationPVC = "velero.io/csi-volume-group-snapshot-class"
+
+	// Annotation prefix on Backup to override VGS class per CSI driver
+	VolumeGroupSnapshotClassAnnotationBackupPrefix = "velero.io/csi-volumegroupsnapshot-class_"
 )

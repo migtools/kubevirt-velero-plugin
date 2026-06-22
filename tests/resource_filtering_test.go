@@ -240,7 +240,7 @@ var _ = Describe("Resource includes", func() {
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, dvName, 180, HaveSucceeded())
 
 				By("Creating backup test-backup")
-				resources := "datavolumes,persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "datavolumes,persistentvolumeclaims,persistentvolumes"
 				err = framework.CreateBackupForResources(timeout, backupName, resources, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
 
@@ -350,7 +350,7 @@ var _ = Describe("Resource includes", func() {
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, dvName, 180, HaveSucceeded())
 
 				By("Creating backup test-backup")
-				resources := "persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "persistentvolumeclaims,persistentvolumes"
 				err = framework.CreateBackupForResources(timeout, backupName, resources, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
 
@@ -461,7 +461,7 @@ var _ = Describe("Resource includes", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				By("Creating backup")
-				resources := "virtualmachines,datavolumes,persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "virtualmachines,datavolumes,persistentvolumeclaims,persistentvolumes"
 				err = framework.CreateBackupForResources(timeout, backupName, resources, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
 				err = framework.WaitForBackupPhase(timeout, backupName, f.BackupNamespace, velerov1api.BackupPhasePartiallyFailed)
@@ -644,7 +644,7 @@ var _ = Describe("Resource includes", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				By("Creating backup")
-				resources := "virtualmachines,datavolumes,persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "virtualmachines,datavolumes,persistentvolumeclaims,persistentvolumes"
 				err = framework.CreateBackupForResources(timeout, backupName, resources, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
 				err = framework.WaitForBackupPhase(timeout, backupName, f.BackupNamespace, velerov1api.BackupPhaseCompleted)
@@ -694,7 +694,7 @@ var _ = Describe("Resource includes", func() {
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, vmSpec.Spec.DataVolumeTemplates[0].Name, 180, HaveSucceeded())
 
 				By("Creating backup")
-				resources := "virtualmachines,datavolumes,virtualmachineinstances,pods,persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "virtualmachines,datavolumes,virtualmachineinstances,pods,persistentvolumeclaims,persistentvolumes"
 				err = framework.CreateBackupForResources(timeout, backupName, resources, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
 				err = framework.WaitForBackupPhase(timeout, backupName, f.BackupNamespace, velerov1api.BackupPhaseCompleted)
@@ -877,7 +877,7 @@ var _ = Describe("Resource includes", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				By("Creating backup with DV+PVC+Pod")
-				resources := "datavolumes,virtualmachineinstances,pods,persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "datavolumes,virtualmachineinstances,pods,persistentvolumeclaims,persistentvolumes"
 				err = framework.CreateBackupForResources(timeout, backupName, resources, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
 				err = framework.WaitForBackupPhase(timeout, backupName, f.BackupNamespace, velerov1api.BackupPhaseCompleted)
@@ -955,7 +955,7 @@ var _ = Describe("Resource includes", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				By("Creating backup")
-				resources := "virtualmachines,datavolumes,persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "virtualmachines,datavolumes,persistentvolumeclaims,persistentvolumes"
 				err = framework.CreateBackupForResources(timeout, backupName, resources, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
 				err = framework.WaitForBackupPhase(timeout, backupName, f.BackupNamespace, velerov1api.BackupPhaseCompleted)
@@ -1017,7 +1017,7 @@ var _ = Describe("Resource includes", func() {
 				framework.EventuallyDVWith(f.KvClient, f.Namespace.Name, dvName, 180, HaveSucceeded())
 
 				By("Creating backup")
-				resources := "virtualmachines,persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "virtualmachines,persistentvolumeclaims,persistentvolumes"
 				err = framework.CreateBackupForResources(timeout, backupName, resources, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
 				err = framework.WaitForBackupPhase(timeout, backupName, f.BackupNamespace, velerov1api.BackupPhaseCompleted)
@@ -1071,7 +1071,7 @@ var _ = Describe("Resource includes", func() {
 				Expect(err).ToNot(HaveOccurred())
 
 				By("Creating backup")
-				resources := "virtualmachines,persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "virtualmachines,persistentvolumeclaims,persistentvolumes"
 				err = framework.CreateBackupForResources(timeout, backupName, resources, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
 				err = framework.WaitForBackupPhase(timeout, backupName, f.BackupNamespace, velerov1api.BackupPhasePartiallyFailed)
@@ -1129,7 +1129,7 @@ var _ = Describe("Resource includes", func() {
 				Expect(ok).To(BeTrue(), "VirtualMachineInstanceAgentConnected should be true")
 
 				By("Creating backup")
-				resources := "datavolumes,virtualmachineinstances,pods,persistentvolumeclaims,persistentvolumes,volumesnapshots,volumesnapshotcontents"
+				resources := "datavolumes,virtualmachineinstances,pods,persistentvolumeclaims,persistentvolumes"
 				err = f.RunBackupScript(timeout, backupName, resources, "", f.Namespace.Name, snapshotLocation, f.BackupNamespace)
 				Expect(err).ToNot(HaveOccurred())
 
@@ -2852,7 +2852,7 @@ var _ = Describe("Resource excludes", func() {
 				Expect(err).ToNot(HaveOccurred())
 			})
 
-			It("[test_id:10251]Negative: VM+VMI+Pod included should fail if VM is paused", func() {
+			It("[test_id:10251]VM+VMI+Pod included should succeed if VM is paused", func() {
 				By("Creating VirtualMachines")
 				vmSpec := framework.CreateVmWithGuestAgent("test-vm", f.StorageClass)
 				vmIncluded, err := framework.CreateVirtualMachineFromDefinition(f.KvClient, f.Namespace.Name, vmSpec)
@@ -2877,7 +2877,7 @@ var _ = Describe("Resource excludes", func() {
 				By("Creating backup")
 				err = framework.CreateBackupForNamespace(timeout, backupName, f.Namespace.Name, snapshotLocation, f.BackupNamespace, true)
 				Expect(err).ToNot(HaveOccurred())
-				err = framework.WaitForBackupPhase(timeout, backupName, f.BackupNamespace, velerov1api.BackupPhasePartiallyFailed)
+				err = framework.WaitForBackupPhase(timeout, backupName, f.BackupNamespace, velerov1api.BackupPhaseCompleted)
 				Expect(err).ToNot(HaveOccurred())
 
 				By("Deleting VMs")
