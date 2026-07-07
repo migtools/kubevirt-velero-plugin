@@ -19,8 +19,9 @@ package framework
 import (
 	"encoding/json"
 
+	"context"
+
 	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	"github.com/vmware-tanzu/velero/pkg/plugin/framework/common"
@@ -37,7 +38,7 @@ func NewDeleteItemActionPlugin(options ...common.PluginOption) *DeleteItemAction
 	}
 }
 
-// DeleteItemActionGRPCClient implements the backup/ItemAction interface and uses a
+// DeleteItemActionGRPCClient implements the DeleteItemAction interface and uses a
 // gRPC client to make calls to the plugin server.
 type DeleteItemActionGRPCClient struct {
 	*common.ClientBase

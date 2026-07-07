@@ -20,8 +20,9 @@ import (
 	"io"
 	"time"
 
+	"context"
+
 	"github.com/pkg/errors"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	"github.com/vmware-tanzu/velero/pkg/plugin/framework/common"
@@ -87,7 +88,9 @@ func (c *ObjectStoreGRPCClient) PutObject(bucket, key string, body io.Reader) er
 			return nil
 		}
 		if err != nil {
-			stream.CloseSend()
+			if err := stream.CloseSend(); err != nil {
+				return common.FromGRPCError(err)
+			}
 			return errors.WithStack(err)
 		}
 
