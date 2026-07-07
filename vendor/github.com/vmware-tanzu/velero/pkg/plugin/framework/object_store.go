@@ -17,8 +17,9 @@ limitations under the License.
 package framework
 
 import (
+	"context"
+
 	plugin "github.com/hashicorp/go-plugin"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 
 	"github.com/vmware-tanzu/velero/pkg/plugin/framework/common"
@@ -36,7 +37,6 @@ type ObjectStorePlugin struct {
 // GRPCClient returns an ObjectStore gRPC client.
 func (p *ObjectStorePlugin) GRPCClient(_ context.Context, _ *plugin.GRPCBroker, clientConn *grpc.ClientConn) (interface{}, error) {
 	return common.NewClientDispenser(p.ClientLogger, clientConn, newObjectStoreGRPCClient), nil
-
 }
 
 // GRPCServer registers an ObjectStore gRPC server.
