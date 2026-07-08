@@ -19,9 +19,8 @@ package v2
 import (
 	"encoding/json"
 
-	"context"
-
 	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
@@ -217,6 +216,6 @@ func backupResourceIdentifierToProto(id velero.ResourceIdentifier) *proto.Resour
 
 // This shouldn't be called on the GRPC server since the server won't ever receive this request, as
 // the RestartableBackupItemAction in Velero won't delegate this to the server
-func (s *BackupItemActionGRPCServer) Name() string {
+func (c *BackupItemActionGRPCServer) Name() string {
 	return ""
 }

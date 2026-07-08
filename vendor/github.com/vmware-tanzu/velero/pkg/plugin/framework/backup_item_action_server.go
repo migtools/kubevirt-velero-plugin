@@ -19,14 +19,14 @@ package framework
 import (
 	"encoding/json"
 
-	"context"
-
 	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	api "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
 	"github.com/vmware-tanzu/velero/pkg/plugin/framework/common"
 	proto "github.com/vmware-tanzu/velero/pkg/plugin/generated"
+	protobiav1 "github.com/vmware-tanzu/velero/pkg/plugin/generated"
 	"github.com/vmware-tanzu/velero/pkg/plugin/velero"
 	biav1 "github.com/vmware-tanzu/velero/pkg/plugin/velero/backupitemaction/v1"
 )
@@ -52,8 +52,8 @@ func (s *BackupItemActionGRPCServer) getImpl(name string) (biav1.BackupItemActio
 }
 
 func (s *BackupItemActionGRPCServer) AppliesTo(
-	ctx context.Context, req *proto.BackupItemActionAppliesToRequest) (
-	response *proto.BackupItemActionAppliesToResponse, err error) {
+	ctx context.Context, req *protobiav1.BackupItemActionAppliesToRequest) (
+	response *protobiav1.BackupItemActionAppliesToResponse, err error) {
 	defer func() {
 		if recoveredErr := common.HandlePanic(recover()); recoveredErr != nil {
 			err = recoveredErr
@@ -70,7 +70,7 @@ func (s *BackupItemActionGRPCServer) AppliesTo(
 		return nil, common.NewGRPCError(err)
 	}
 
-	return &proto.BackupItemActionAppliesToResponse{
+	return &protobiav1.BackupItemActionAppliesToResponse{
 		ResourceSelector: &proto.ResourceSelector{
 			IncludedNamespaces: resourceSelector.IncludedNamespaces,
 			ExcludedNamespaces: resourceSelector.ExcludedNamespaces,
@@ -82,7 +82,7 @@ func (s *BackupItemActionGRPCServer) AppliesTo(
 }
 
 func (s *BackupItemActionGRPCServer) Execute(
-	ctx context.Context, req *proto.ExecuteRequest) (response *proto.ExecuteResponse, err error) {
+	ctx context.Context, req *protobiav1.ExecuteRequest) (response *protobiav1.ExecuteResponse, err error) {
 	defer func() {
 		if recoveredErr := common.HandlePanic(recover()); recoveredErr != nil {
 			err = recoveredErr
@@ -121,7 +121,7 @@ func (s *BackupItemActionGRPCServer) Execute(
 		}
 	}
 
-	res := &proto.ExecuteResponse{
+	res := &protobiav1.ExecuteResponse{
 		Item: updatedItemJSON,
 	}
 

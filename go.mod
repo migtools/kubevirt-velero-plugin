@@ -9,7 +9,7 @@ require (
 	github.com/sirupsen/logrus v1.9.3
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.11.1
-	github.com/vmware-tanzu/velero v1.12.4
+	github.com/vmware-tanzu/velero v1.11.1
 	k8s.io/api v0.27.1
 	k8s.io/apimachinery v0.27.1
 	k8s.io/client-go v12.0.0+incompatible
@@ -52,6 +52,7 @@ require (
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/k8snetworkplumbingwg/network-attachment-definition-client v0.0.0-20191119172530-79f836b90111 // indirect
+	github.com/kopia/kopia v0.10.7 // indirect
 	github.com/kubernetes-csi/external-snapshotter/client/v4 v4.2.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -68,6 +69,8 @@ require (
 	github.com/pmezard/go-difflib v1.0.1-0.20181226105442-5d4384ee4fb2 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/spf13/cobra v1.6.0 // indirect
+	go.uber.org/multierr v1.11.0 // indirect
+	go.uber.org/zap v1.25.0 // indirect
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
@@ -90,6 +93,7 @@ require (
 )
 
 replace (
+	github.com/kopia/kopia => github.com/migtools/kopia v0.0.0-20260706151658-e8a1ecd858b7
 	github.com/kubernetes-csi/external-snapshotter/v2 => github.com/kubernetes-csi/external-snapshotter/v2 v2.2.0-rc4
 
 	github.com/openshift/api => github.com/openshift/api v0.0.0-20230406152840-ce21e3fe5da2
@@ -97,9 +101,3 @@ replace (
 	k8s.io/api => k8s.io/api v0.26.4
 	k8s.io/client-go => k8s.io/client-go v0.26.4
 )
-
-exclude github.com/kcp-dev/kcp/sdk v0.0.0-00010101000000-000000000000
-
-replace github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260707184635-e3ed032b0b82
-
-replace github.com/kopia/kopia => github.com/migtools/kopia v0.13.0-velero.1.0.20260706195151-83febd3dd228
