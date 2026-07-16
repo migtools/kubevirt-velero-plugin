@@ -97,3 +97,6 @@ replace (
 	k8s.io/client-go => k8s.io/client-go v0.26.4
 	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20230501164219-8b0f38b5fd1f
 )
+
+exclude github.com/kcp-dev/kcp/sdk v0.0.0-00010101000000-000000000000
+replace github.com/vmware-tanzu/velero => github.com/openshift/velero oadp-1.4
