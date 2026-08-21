@@ -327,8 +327,8 @@ github.com/openshift/client-go v0.0.0-20230324103026-3f1513df25e0 h1:ftAVjdiw4/B
 github.com/openshift/client-go v0.0.0-20230324103026-3f1513df25e0/go.mod h1:8jtoeGR9UNGacP00O4WBeSFY3WaP7t0gkm9NZOSSWmg=
 github.com/openshift/custom-resource-status v1.1.2 h1:C3DL44LEbvlbItfd8mT5jWrqPfHnSOQoQf/sypqA6A4=
 github.com/openshift/custom-resource-status v1.1.2/go.mod h1:DB/Mf2oTeiAmVVX1gN+NEqweonAPY0TKUwADizj8+ZA=
-github.com/openshift/velero v0.10.2-0.20260701234155-b7b4cdc9cc18 h1:qaH/w53f3k7rdQIMEaNCEHdQ0cnOOu5BnZP415PUbNM=
-github.com/openshift/velero v0.10.2-0.20260701234155-b7b4cdc9cc18/go.mod h1:+M4c2Q5ewkyTAKNh4Y+Z+EOX7u9bZo1xtlo98dpx1Gc=
+github.com/openshift/velero v0.10.2-0.20260731161015-9bb8423aba58 h1:4WYJmfx7GqYdxhpV+M/dMV5TxC3QogG8ZpHjkxzAiAE=
+github.com/openshift/velero v0.10.2-0.20260731161015-9bb8423aba58/go.mod h1:+M4c2Q5ewkyTAKNh4Y+Z+EOX7u9bZo1xtlo98dpx1Gc=
 github.com/orisano/pixelmatch v0.0.0-20220722002657-fb0b55479cde/go.mod h1:nZgzbfBr3hhjoZnS66nKrHmduYNpc34ny7RK4z5/HM0=
 github.com/peterbourgon/diskv v2.0.1+incompatible/go.mod h1:uqqh8zWWbv1HBMNONnaR/tNboyR3/BZd58JJSHlUSCU=
 github.com/pkg/diff v0.0.0-20210226163009-20ebb0f2a09e/go.mod h1:pJLUxLENpZxwdsKMEsNbx1VGcRFpLqf3715MtcvvzbA=
