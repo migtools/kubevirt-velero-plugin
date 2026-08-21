@@ -103,6 +103,19 @@ require (
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
 
+exclude github.com/kcp-dev/kcp/sdk v0.0.0-00010101000000-000000000000
+
+replace k8s.io/client-go => k8s.io/client-go v0.33.5
+
+replace github.com/kubernetes-csi/external-snapshotter/v2 => github.com/kubernetes-csi/external-snapshotter/v2 v2.2.0-rc4
+
+replace github.com/openshift/api => github.com/openshift/api v0.0.0-20230406152840-ce21e3fe5da2
+
+replace github.com/openshift/client-go => github.com/openshift/client-go v0.0.0-20230324103026-3f1513df25e0
+
+replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff
+
+replace k8s.io/api => k8s.io/api v0.33.5
 replace (
 	github.com/kubernetes-csi/external-snapshotter/v2 => github.com/kubernetes-csi/external-snapshotter/v2 v2.2.0-rc4
 	github.com/openshift/api => github.com/openshift/api v0.0.0-20230406152840-ce21e3fe5da2
@@ -111,7 +124,4 @@ replace (
 	k8s.io/client-go => k8s.io/client-go v0.33.5
 	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff
 )
-
-replace github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260701234155-b7b4cdc9cc18
-
-exclude github.com/kcp-dev/kcp/sdk v0.0.0-00010101000000-000000000000
+replace github.com/vmware-tanzu/velero => github.com/openshift/velero oadp-1.6
