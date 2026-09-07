@@ -4,6 +4,7 @@ go 1.25.8
 
 require (
 	github.com/google/uuid v1.6.0
+	github.com/k8snetworkplumbingwg/network-attachment-definition-client v0.0.0-20191119172530-79f836b90111
 	github.com/kubernetes-csi/external-snapshotter/client/v7 v7.0.0
 	github.com/onsi/ginkgo/v2 v2.28.3
 	github.com/onsi/gomega v1.40.0
@@ -57,7 +58,6 @@ require (
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
-	github.com/k8snetworkplumbingwg/network-attachment-definition-client v0.0.0-20191119172530-79f836b90111 // indirect
 	github.com/kr/pretty v0.3.1 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/kubernetes-csi/external-snapshotter/client/v4 v4.2.0 // indirect
@@ -112,17 +112,6 @@ require (
 
 exclude github.com/kcp-dev/kcp/sdk v0.0.0-00010101000000-000000000000
 
-replace k8s.io/client-go => k8s.io/client-go v0.33.5
-
-replace github.com/kubernetes-csi/external-snapshotter/v2 => github.com/kubernetes-csi/external-snapshotter/v2 v2.2.0-rc4
-
-replace github.com/openshift/api => github.com/openshift/api v0.0.0-20230406152840-ce21e3fe5da2
-
-replace github.com/openshift/client-go => github.com/openshift/client-go v0.0.0-20230324103026-3f1513df25e0
-
-replace k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff
-
-replace k8s.io/api => k8s.io/api v0.33.5
 replace (
 	github.com/kubernetes-csi/external-snapshotter/v2 => github.com/kubernetes-csi/external-snapshotter/v2 v2.2.0-rc4
 	github.com/openshift/api => github.com/openshift/api v0.0.0-20230406152840-ce21e3fe5da2
@@ -131,4 +120,5 @@ replace (
 	k8s.io/client-go => k8s.io/client-go v0.33.5
 	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff
 )
-replace github.com/vmware-tanzu/velero => github.com/openshift/velero oadp-1.6
+
+replace github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260904060022-e81ee90062e6
