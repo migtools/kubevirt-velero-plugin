@@ -27,11 +27,6 @@ type ginkgoWriterInterface interface {
 type ginkgoRecoverFunc func()
 type attachProgressReporterFunc func(func() string) func()
 
-var formatters = map[bool]formatter.Formatter{
-	true:  formatter.NewWithNoColorBool(true),
-	false: formatter.NewWithNoColorBool(false),
-}
-
 func New(writer ginkgoWriterInterface, fail failFunc, skip skipFunc, cleanup cleanupFunc, report reportFunc, addReportEntry addReportEntryFunc, ginkgoRecover ginkgoRecoverFunc, attachProgressReporter attachProgressReporterFunc, randomSeed int64, parallelProcess int, parallelTotal int, noColor bool, offset int) *ginkgoTestingTProxy {
 	return &ginkgoTestingTProxy{
 		fail:                   fail,
@@ -46,7 +41,7 @@ func New(writer ginkgoWriterInterface, fail failFunc, skip skipFunc, cleanup cle
 		randomSeed:             randomSeed,
 		parallelProcess:        parallelProcess,
 		parallelTotal:          parallelTotal,
-		f:                      formatters[noColor], //minimize allocations by reusing formatters
+		f:                      formatter.NewWithNoColorBool(noColor),
 	}
 }
 
@@ -181,15 +176,6 @@ func (t *ginkgoTestingTProxy) TempDir() string {
 	return tmpDir
 }
 
-func (t *ginkgoTestingTProxy) ArtifactDir() string {
-	artifactDir, err := os.MkdirTemp("", "ginkgo")
-	if err != nil {
-		t.fail(fmt.Sprintf("Failed to create artifact directory: %v", err), 1)
-		return ""
-	}
-	return artifactDir
-}
-
 // FullGinkgoTInterface
 func (t *ginkgoTestingTProxy) AddReportEntryVisibilityAlways(name string, args ...any) {
 	finalArgs := []any{internal.Offset(1), types.ReportEntryVisibilityAlways}
@@ -242,10 +228,4 @@ func (t *ginkgoTestingTProxy) ParallelTotal() int {
 }
 func (t *ginkgoTestingTProxy) AttachProgressReporter(f func() string) func() {
 	return t.attachProgressReporter(f)
-}
-func (t *ginkgoTestingTProxy) Output() io.Writer {
-	return t.writer
-}
-func (t *ginkgoTestingTProxy) Attr(key, value string) {
-	t.addReportEntry(key, value, internal.Offset(1), types.ReportEntryVisibilityFailureOrVerbose)
 }

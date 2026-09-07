@@ -24,7 +24,6 @@ type SuiteConfig struct {
 	FocusFiles            []string
 	SkipFiles             []string
 	LabelFilter           string
-	SemVerFilter          string
 	FailOnPending         bool
 	FailOnEmpty           bool
 	FailFast              bool
@@ -96,7 +95,6 @@ type ReporterConfig struct {
 	ForceNewlines  bool
 
 	JSONReport     string
-	GoJSONReport   string
 	JUnitReport    string
 	TeamcityReport string
 }
@@ -113,7 +111,7 @@ func (rc ReporterConfig) Verbosity() VerbosityLevel {
 }
 
 func (rc ReporterConfig) WillGenerateReport() bool {
-	return rc.JSONReport != "" || rc.GoJSONReport != "" || rc.JUnitReport != "" || rc.TeamcityReport != ""
+	return rc.JSONReport != "" || rc.JUnitReport != "" || rc.TeamcityReport != ""
 }
 
 func NewDefaultReporterConfig() ReporterConfig {
@@ -215,7 +213,6 @@ type GoFlagsConfig struct {
 	N             bool
 	ModFile       string
 	ModCacheRW    bool
-	ASan          bool
 	MSan          bool
 	PkgDir        string
 	Tags          string
@@ -311,8 +308,6 @@ var SuiteConfigFlags = GinkgoFlags{
 
 	{KeyPath: "S.LabelFilter", Name: "label-filter", SectionKey: "filter", UsageArgument: "expression",
 		Usage: "If set, ginkgo will only run specs with labels that match the label-filter.  The passed-in expression can include boolean operations (!, &&, ||, ','), groupings via '()', and regular expressions '/regexp/'.  e.g. '(cat || dog) && !fruit'"},
-	{KeyPath: "S.SemVerFilter", Name: "sem-ver-filter", SectionKey: "filter", UsageArgument: "version",
-		Usage: "If set, ginkgo will only run specs with semantic version constraints that are satisfied by the provided version. e.g. '2.1.0'"},
 	{KeyPath: "S.FocusStrings", Name: "focus", SectionKey: "filter",
 		Usage: "If set, ginkgo will only run specs that match this regular expression. Can be specified multiple times, values are ORed."},
 	{KeyPath: "S.SkipStrings", Name: "skip", SectionKey: "filter",
@@ -361,8 +356,6 @@ var ReporterConfigFlags = GinkgoFlags{
 
 	{KeyPath: "R.JSONReport", Name: "json-report", UsageArgument: "filename.json", SectionKey: "output",
 		Usage: "If set, Ginkgo will generate a JSON-formatted test report at the specified location."},
-	{KeyPath: "R.GoJSONReport", Name: "gojson-report", UsageArgument: "filename.json", SectionKey: "output",
-		Usage: "If set, Ginkgo will generate a Go JSON-formatted test report at the specified location."},
 	{KeyPath: "R.JUnitReport", Name: "junit-report", UsageArgument: "filename.xml", SectionKey: "output", DeprecatedName: "reportFile", DeprecatedDocLink: "improved-reporting-infrastructure",
 		Usage: "If set, Ginkgo will generate a conformant junit test report in the specified file."},
 	{KeyPath: "R.TeamcityReport", Name: "teamcity-report", UsageArgument: "filename", SectionKey: "output",
@@ -445,13 +438,6 @@ func VetConfig(flagSet GinkgoFlagSet, suiteConfig SuiteConfig, reporterConfig Re
 
 	if suiteConfig.LabelFilter != "" {
 		_, err := ParseLabelFilter(suiteConfig.LabelFilter)
-		if err != nil {
-			errors = append(errors, err)
-		}
-	}
-
-	if suiteConfig.SemVerFilter != "" {
-		_, err := ParseSemVerFilter(suiteConfig.SemVerFilter)
 		if err != nil {
 			errors = append(errors, err)
 		}
@@ -571,8 +557,6 @@ var GoBuildFlags = GinkgoFlags{
 		Usage: "leave newly-created directories in the module cache read-write instead of making them read-only."},
 	{KeyPath: "Go.ModFile", Name: "modfile", UsageArgument: "file", SectionKey: "go-build",
 		Usage: `in module aware mode, read (and possibly write) an alternate go.mod file instead of the one in the module root directory. A file named go.mod must still be present in order to determine the module root directory, but it is not accessed. When -modfile is specified, an alternate go.sum file is also used: its path is derived from the -modfile flag by trimming the ".mod" extension and appending ".sum".`},
-	{KeyPath: "Go.ASan", Name: "asan", SectionKey: "go-build",
-		Usage: "enable interoperation with address sanitizer."},
 	{KeyPath: "Go.MSan", Name: "msan", SectionKey: "go-build",
 		Usage: "enable interoperation with memory sanitizer. Supported only on linux/amd64, linux/arm64 and only with Clang/LLVM as the host C compiler. On linux/arm64, pie build mode will be used."},
 	{KeyPath: "Go.N", Name: "n", SectionKey: "go-build",
@@ -589,9 +573,6 @@ var GoBuildFlags = GinkgoFlags{
 		Usage: "print the name of the temporary work directory and do not delete it when exiting."},
 	{KeyPath: "Go.X", Name: "x", SectionKey: "go-build",
 		Usage: "print the commands."},
-}
-
-var GoBuildOFlags = GinkgoFlags{
 	{KeyPath: "Go.O", Name: "o", SectionKey: "go-build",
 		Usage: "output binary path (including name)."},
 }
@@ -692,7 +673,7 @@ func GenerateGoTestCompileArgs(goFlagsConfig GoFlagsConfig, packageToBuild strin
 
 	args := []string{"test", "-c", packageToBuild}
 	goArgs, err := GenerateFlagArgs(
-		GoBuildFlags.CopyAppend(GoBuildOFlags...),
+		GoBuildFlags,
 		map[string]any{
 			"Go": &goFlagsConfig,
 		},
@@ -782,7 +763,6 @@ func BuildWatchCommandFlagSet(suiteConfig *SuiteConfig, reporterConfig *Reporter
 func BuildBuildCommandFlagSet(cliConfig *CLIConfig, goFlagsConfig *GoFlagsConfig) (GinkgoFlagSet, error) {
 	flags := GinkgoCLISharedFlags
 	flags = flags.CopyAppend(GoBuildFlags...)
-	flags = flags.CopyAppend(GoBuildOFlags...)
 
 	bindings := map[string]any{
 		"C":  cliConfig,

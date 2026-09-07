@@ -17,7 +17,7 @@ limitations under the License.
 package framework
 
 import (
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/util/sets"
 )
 

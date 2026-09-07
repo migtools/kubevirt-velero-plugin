@@ -21,7 +21,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 )
 
