@@ -19,9 +19,8 @@ package v1
 import (
 	"encoding/json"
 
-	"context"
-
 	"github.com/pkg/errors"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/runtime/schema"

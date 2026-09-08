@@ -33,7 +33,6 @@ import (
 	estats "google.golang.org/grpc/experimental/stats"
 	"google.golang.org/grpc/grpclog"
 	"google.golang.org/grpc/internal"
-	"google.golang.org/grpc/internal/envconfig"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/resolver"
 	"google.golang.org/grpc/serviceconfig"
@@ -47,8 +46,8 @@ var (
 )
 
 // Register registers the balancer builder to the balancer map. b.Name
-// will be used as the name registered with this builder. If the Builder
-// implements ConfigParser, ParseConfig will be called when new service
+// (lowercased) will be used as the name registered with this builder.  If the
+// Builder implements ConfigParser, ParseConfig will be called when new service
 // configs are received by the resolver, and the result will be provided to the
 // Balancer in UpdateClientConnState.
 //
@@ -56,12 +55,12 @@ var (
 // an init() function), and is not thread-safe. If multiple Balancers are
 // registered with the same name, the one registered last will take effect.
 func Register(b Builder) {
-	name := b.Name()
-	if !envconfig.CaseSensitiveBalancerRegistries {
-		name = strings.ToLower(name)
-		if name != b.Name() {
-			logger.Warningf("Balancer registered with name %q. grpc-go has switched to case sensitive balancer registries. GRPC_GO_EXPERIMENTAL_CASE_SENSITIVE_BALANCER_REGISTRIES env variable will be removed in release v1.82.0", b.Name())
-		}
+	name := strings.ToLower(b.Name())
+	if name != b.Name() {
+		// TODO: Skip the use of strings.ToLower() to index the map after v1.59
+		// is released to switch to case sensitive balancer registry. Also,
+		// remove this warning and update the docstrings for Register and Get.
+		logger.Warningf("Balancer registered with name %q. grpc-go will be switching to case sensitive balancer registries soon", b.Name())
 	}
 	m[name] = b
 }
@@ -76,20 +75,21 @@ func unregisterForTesting(name string) {
 
 func init() {
 	internal.BalancerUnregister = unregisterForTesting
+	internal.ConnectedAddress = connectedAddress
+	internal.SetConnectedAddress = setConnectedAddress
 }
 
 // Get returns the resolver builder registered with the given name.
-// Note that the compare is done in a case-sensitive fashion.
+// Note that the compare is done in a case-insensitive fashion.
 // If no builder is register with the name, nil will be returned.
 func Get(name string) Builder {
-	if !envconfig.CaseSensitiveBalancerRegistries {
-		lowerName := strings.ToLower(name)
-		if lowerName != name {
-			logger.Warningf("Balancer retrieved for name %q. grpc-go has switched to case sensitive balancer registries. GRPC_GO_EXPERIMENTAL_CASE_SENSITIVE_BALANCER_REGISTRIES env variable will be removed in release v1.82.0", name)
-		}
-		name = lowerName
+	if strings.ToLower(name) != name {
+		// TODO: Skip the use of strings.ToLower() to index the map after v1.59
+		// is released to switch to case sensitive balancer registry. Also,
+		// remove this warning and update the docstrings for Register and Get.
+		logger.Warningf("Balancer retrieved for name %q. grpc-go will be switching to case sensitive balancer registries soon", name)
 	}
-	if b, ok := m[name]; ok {
+	if b, ok := m[strings.ToLower(name)]; ok {
 		return b
 	}
 	return nil
@@ -129,13 +129,6 @@ type State struct {
 // brand new implementation of this interface. For the situations like
 // testing, the new implementation should embed this interface. This allows
 // gRPC to add new methods to this interface.
-//
-// NOTICE: This interface is intended to be implemented by gRPC, or intercepted
-// by custom load balancing polices.  Users should not need their own complete
-// implementation of this interface -- they should always delegate to a
-// ClientConn passed to Builder.Build() by embedding it in their
-// implementations. An embedded ClientConn must never be nil, or runtime panics
-// will occur.
 type ClientConn interface {
 	// NewSubConn is called by balancer to create a new SubConn.
 	// It doesn't block and wait for the connections to be established.
@@ -174,17 +167,6 @@ type ClientConn interface {
 	//
 	// Deprecated: Use the Target field in the BuildOptions instead.
 	Target() string
-
-	// MetricsRecorder provides the metrics recorder that balancers can use to
-	// record metrics. Balancer implementations which do not register metrics on
-	// metrics registry and record on them can ignore this method. The returned
-	// MetricsRecorder is guaranteed to never be nil.
-	MetricsRecorder() estats.MetricsRecorder
-
-	// EnforceClientConnEmbedding is included to force implementers to embed
-	// another implementation of this interface, allowing gRPC to add methods
-	// without breaking users.
-	internal.EnforceClientConnEmbedding
 }
 
 // BuildOptions contains additional information for Build.
@@ -216,6 +198,10 @@ type BuildOptions struct {
 	// same resolver.Target as passed to the resolver. See the documentation for
 	// the resolver.Target type for details about what it contains.
 	Target resolver.Target
+	// MetricsRecorder is the metrics recorder that balancers can use to record
+	// metrics. Balancer implementations which do not register metrics on
+	// metrics registry and record on them can ignore this field.
+	MetricsRecorder estats.MetricsRecorder
 }
 
 // Builder creates a balancer.
@@ -360,10 +346,6 @@ type Balancer interface {
 	// call SubConn.Shutdown for its existing SubConns; however, this will be
 	// required in a future release, so it is recommended.
 	Close()
-	// ExitIdle instructs the LB policy to reconnect to backends / exit the
-	// IDLE state, if appropriate and possible.  Note that SubConns that enter
-	// the IDLE state will not reconnect until SubConn.Connect is called.
-	ExitIdle()
 }
 
 // ExitIdler is an optional interface for balancers to implement.  If
@@ -371,8 +353,8 @@ type Balancer interface {
 // the ClientConn is idle.  If unimplemented, ClientConn.Connect will cause
 // all SubConns to connect.
 //
-// Deprecated: All balancers must implement this interface. This interface will
-// be removed in a future release.
+// Notice: it will be required for all balancers to implement this in a future
+// release.
 type ExitIdler interface {
 	// ExitIdle instructs the LB policy to reconnect to backends / exit the
 	// IDLE state, if appropriate and possible.  Note that SubConns that enter
