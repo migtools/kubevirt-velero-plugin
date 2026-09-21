@@ -311,7 +311,7 @@ github.com/spf13/pflag
 ## explicit; go 1.17
 github.com/stretchr/testify/assert
 github.com/stretchr/testify/assert/yaml
-# github.com/vmware-tanzu/velero v1.18.3-rc.1 => github.com/openshift/velero v0.10.2-0.20260904060022-e81ee90062e6
+# github.com/vmware-tanzu/velero v1.18.3 => github.com/openshift/velero v0.10.2-0.20260904060022-e81ee90062e6
 ## explicit; go 1.25.8
 github.com/vmware-tanzu/velero/internal/credentials
 github.com/vmware-tanzu/velero/internal/resourcepolicies
