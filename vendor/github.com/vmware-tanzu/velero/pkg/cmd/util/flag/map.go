@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 )
 
 // Map is a Cobra-compatible wrapper for defining a flag containing

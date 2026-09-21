@@ -21,7 +21,7 @@ import (
 
 	"context"
 
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 

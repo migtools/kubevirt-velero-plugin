@@ -20,10 +20,9 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 	"time"
 
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	corev1api "k8s.io/api/core/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
@@ -41,12 +40,10 @@ type LoadAffinity struct {
 }
 
 type PodResources struct {
-	CPURequest              string `json:"cpuRequest,omitempty"`
-	CPULimit                string `json:"cpuLimit,omitempty"`
-	MemoryRequest           string `json:"memoryRequest,omitempty"`
-	MemoryLimit             string `json:"memoryLimit,omitempty"`
-	EphemeralStorageRequest string `json:"ephemeralStorageRequest,omitempty"`
-	EphemeralStorageLimit   string `json:"ephemeralStorageLimit,omitempty"`
+	CPURequest    string `json:"cpuRequest,omitempty"`
+	MemoryRequest string `json:"memoryRequest,omitempty"`
+	CPULimit      string `json:"cpuLimit,omitempty"`
+	MemoryLimit   string `json:"memoryLimit,omitempty"`
 }
 
 // IsPodRunning does a well-rounded check to make sure the specified pod is running stably.
@@ -184,17 +181,16 @@ func GetPodContainerTerminateMessage(pod *corev1api.Pod, container string) strin
 
 // GetPodTerminateMessage returns the terminate message for all containers of a pod
 func GetPodTerminateMessage(pod *corev1api.Pod) string {
-	//message := ""
-	var message strings.Builder
+	message := ""
 	for _, containerStatus := range pod.Status.ContainerStatuses {
 		if containerStatus.State.Terminated != nil {
 			if containerStatus.State.Terminated.Message != "" {
-				_, _ = fmt.Fprintf(&message, "%s/", containerStatus.State.Terminated.Message)
+				message += containerStatus.State.Terminated.Message + "/"
 			}
 		}
 	}
 
-	return message.String()
+	return message
 }
 
 func getPodLogReader(ctx context.Context, podGetter corev1client.CoreV1Interface, pod string, namespace string, logOptions *corev1api.PodLogOptions) (io.ReadCloser, error) {
@@ -234,9 +230,14 @@ func CollectPodLogs(ctx context.Context, podGetter corev1client.CoreV1Interface,
 	return nil
 }
 
-func ToSystemAffinity(loadAffinity *LoadAffinity, volumeTopology *corev1api.NodeSelector) *corev1api.Affinity {
-	requirements := []corev1api.NodeSelectorRequirement{}
-	if loadAffinity != nil {
+func ToSystemAffinity(loadAffinities []*LoadAffinity) *corev1api.Affinity {
+	if len(loadAffinities) == 0 {
+		return nil
+	}
+	nodeSelectorTermList := make([]corev1api.NodeSelectorTerm, 0)
+
+	for _, loadAffinity := range loadAffinities {
+		requirements := []corev1api.NodeSelectorRequirement{}
 		for k, v := range loadAffinity.NodeSelector.MatchLabels {
 			requirements = append(requirements, corev1api.NodeSelectorRequirement{
 				Key:      k,
@@ -252,44 +253,43 @@ func ToSystemAffinity(loadAffinity *LoadAffinity, volumeTopology *corev1api.Node
 				Operator: corev1api.NodeSelectorOperator(exp.Operator),
 			})
 		}
+
+		nodeSelectorTermList = append(
+			nodeSelectorTermList,
+			corev1api.NodeSelectorTerm{
+				MatchExpressions: requirements,
+			},
+		)
 	}
 
-	result := new(corev1api.Affinity)
-	result.NodeAffinity = new(corev1api.NodeAffinity)
-	result.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution = new(corev1api.NodeSelector)
+	if len(nodeSelectorTermList) > 0 {
+		result := new(corev1api.Affinity)
+		result.NodeAffinity = new(corev1api.NodeAffinity)
+		result.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution = new(corev1api.NodeSelector)
+		result.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution.NodeSelectorTerms = nodeSelectorTermList
 
-	if volumeTopology != nil {
-		result.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution.NodeSelectorTerms = append(result.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution.NodeSelectorTerms, volumeTopology.NodeSelectorTerms...)
-	} else if len(requirements) > 0 {
-		result.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution.NodeSelectorTerms = make([]corev1api.NodeSelectorTerm, 1)
-	} else {
-		return nil
+		return result
 	}
 
-	for i := range result.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution.NodeSelectorTerms {
-		result.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution.NodeSelectorTerms[i].MatchExpressions = append(result.NodeAffinity.RequiredDuringSchedulingIgnoredDuringExecution.NodeSelectorTerms[i].MatchExpressions, requirements...)
-	}
-
-	return result
+	return nil
 }
 
 func DiagnosePod(pod *corev1api.Pod, events *corev1api.EventList) string {
-	var diag strings.Builder
-	_, _ = fmt.Fprintf(&diag, "Pod %s/%s, phase %s, node name %s, message %s\n", pod.Namespace, pod.Name, pod.Status.Phase, pod.Spec.NodeName, pod.Status.Message)
+	diag := fmt.Sprintf("Pod %s/%s, phase %s, node name %s, message %s\n", pod.Namespace, pod.Name, pod.Status.Phase, pod.Spec.NodeName, pod.Status.Message)
 
 	for _, condition := range pod.Status.Conditions {
-		_, _ = fmt.Fprintf(&diag, "Pod condition %s, status %s, reason %s, message %s\n", condition.Type, condition.Status, condition.Reason, condition.Message)
+		diag += fmt.Sprintf("Pod condition %s, status %s, reason %s, message %s\n", condition.Type, condition.Status, condition.Reason, condition.Message)
 	}
 
 	if events != nil {
 		for _, e := range events.Items {
 			if e.InvolvedObject.UID == pod.UID && e.Type == corev1api.EventTypeWarning {
-				_, _ = fmt.Fprintf(&diag, "Pod event reason %s, message %s\n", e.Reason, e.Message)
+				diag += fmt.Sprintf("Pod event reason %s, message %s\n", e.Reason, e.Message)
 			}
 		}
 	}
 
-	return diag.String()
+	return diag
 }
 
 var funcExit = os.Exit
@@ -319,26 +319,9 @@ func ExitPodWithMessage(logger logrus.FieldLogger, succeed bool, message string,
 	funcExit(exitCode)
 }
 
-// deepCopy returns a deep copy of the LoadAffinity, so that the returned value
-// can be safely modified without affecting the source.
-func (a *LoadAffinity) deepCopy() *LoadAffinity {
-	if a == nil {
-		return nil
-	}
-
-	result := &LoadAffinity{
-		StorageClass: a.StorageClass,
-	}
-	a.NodeSelector.DeepCopyInto(&result.NodeSelector)
-
-	return result
-}
-
 // GetLoadAffinityByStorageClass retrieves the LoadAffinity from the parameter affinityList.
 // The function first try to find by the scName. If there is no such LoadAffinity,
 // it will try to get the LoadAffinity whose StorageClass has no value.
-// The returned LoadAffinity is a deep copy of the matched element, so that the
-// callers can modify it without corrupting the shared node-agent configuration.
 func GetLoadAffinityByStorageClass(
 	affinityList []*LoadAffinity,
 	scName string,
@@ -349,7 +332,7 @@ func GetLoadAffinityByStorageClass(
 	for _, affinity := range affinityList {
 		if affinity.StorageClass == scName {
 			logger.WithField("StorageClass", scName).Info("Found pod's affinity setting per StorageClass.")
-			return affinity.deepCopy()
+			return affinity
 		}
 
 		if affinity.StorageClass == "" && globalAffinity == nil {
@@ -363,5 +346,5 @@ func GetLoadAffinityByStorageClass(
 		logger.Info("No Affinity is found for pod.")
 	}
 
-	return globalAffinity.deepCopy()
+	return globalAffinity
 }

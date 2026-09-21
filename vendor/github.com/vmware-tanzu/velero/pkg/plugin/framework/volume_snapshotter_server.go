@@ -21,7 +21,7 @@ import (
 
 	"context"
 
-	"github.com/cockroachdb/errors"
+	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 
 	"github.com/vmware-tanzu/velero/pkg/plugin/framework/common"

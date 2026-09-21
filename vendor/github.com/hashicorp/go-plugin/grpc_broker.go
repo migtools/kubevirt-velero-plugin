@@ -100,6 +100,8 @@ func (s *gRPCBrokerServer) StartStream(stream plugin.GRPCBroker_StartStreamServe
 		case s.recv <- i:
 		}
 	}
+
+	return nil
 }
 
 // Send is used by the GRPCBroker to pass connection information into the stream
@@ -208,6 +210,8 @@ func (s *gRPCBrokerClientImpl) StartStream() error {
 		case s.recv <- i:
 		}
 	}
+
+	return nil
 }
 
 // Send is used by the GRPCBroker to pass connection information into the stream
@@ -378,7 +382,7 @@ func (b *GRPCBroker) AcceptAndServe(id uint32, newGRPCServer func([]grpc.ServerO
 		log.Printf("[ERR] plugin: plugin acceptAndServe error: %s", err)
 		return
 	}
-	defer func() { _ = ln.Close() }()
+	defer ln.Close()
 
 	var opts []grpc.ServerOption
 	if b.tls != nil {
@@ -414,7 +418,7 @@ func (b *GRPCBroker) AcceptAndServe(id uint32, newGRPCServer func([]grpc.ServerO
 	}
 
 	// Block until we are done
-	_ = g.Run()
+	g.Run()
 }
 
 // Close closes the stream and all servers.
@@ -498,8 +502,8 @@ func (b *GRPCBroker) knock(id uint32) error {
 	return nil
 }
 
-func (b *GRPCBroker) muxDial(id uint32) func(context.Context, string) (net.Conn, error) {
-	return func(context.Context, string) (net.Conn, error) {
+func (b *GRPCBroker) muxDial(id uint32) func(string, time.Duration) (net.Conn, error) {
+	return func(string, time.Duration) (net.Conn, error) {
 		b.dialMutex.Lock()
 		defer b.dialMutex.Unlock()
 
@@ -519,12 +523,9 @@ func (b *GRPCBroker) muxDial(id uint32) func(context.Context, string) (net.Conn,
 }
 
 // Dial opens a connection by ID.
-func (b *GRPCBroker) Dial(id uint32) (conn *grpc.ClientConn, err error) { return b.DialWithOptions(id) }
-
-// Dial opens a connection by ID with options.
-func (b *GRPCBroker) DialWithOptions(id uint32, opts ...grpc.DialOption) (conn *grpc.ClientConn, err error) {
+func (b *GRPCBroker) Dial(id uint32) (conn *grpc.ClientConn, err error) {
 	if b.muxer.Enabled() {
-		return dialGRPCConn(b.tls, b.muxDial(id), opts...)
+		return dialGRPCConn(b.tls, b.muxDial(id))
 	}
 
 	var c *plugin.ConnInfo
@@ -553,13 +554,13 @@ func (b *GRPCBroker) DialWithOptions(id uint32, opts ...grpc.DialOption) (conn *
 	case "unix":
 		addr, err = net.ResolveUnixAddr("unix", address)
 	default:
-		err = fmt.Errorf("unknown address type: %s", c.Address)
+		err = fmt.Errorf("Unknown address type: %s", c.Address)
 	}
 	if err != nil {
 		return nil, err
 	}
 
-	return dialGRPCConn(b.tls, netAddrDialer(addr), opts...)
+	return dialGRPCConn(b.tls, netAddrDialer(addr))
 }
 
 // NextId returns a unique ID to use next.
