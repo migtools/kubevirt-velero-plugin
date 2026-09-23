@@ -1,6 +1,6 @@
 module kubevirt.io/kubevirt-velero-plugin
 
-go 1.25.8
+go 1.26.0
 
 require (
 	github.com/google/uuid v1.6.0
@@ -121,4 +121,4 @@ replace (
 	k8s.io/kube-openapi => k8s.io/kube-openapi v0.0.0-20250318190949-c8a335a9a2ff
 )
 
-replace github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260904060022-e81ee90062e6
+replace github.com/vmware-tanzu/velero => github.com/openshift/velero v0.10.2-0.20260922232025-4365110ccbf8
