@@ -769,8 +769,8 @@ github.com/openshift/client-go v0.0.0-20230324103026-3f1513df25e0/go.mod h1:8jto
 github.com/openshift/custom-resource-status v1.1.2 h1:C3DL44LEbvlbItfd8mT5jWrqPfHnSOQoQf/sypqA6A4=
 github.com/openshift/custom-resource-status v1.1.2/go.mod h1:DB/Mf2oTeiAmVVX1gN+NEqweonAPY0TKUwADizj8+ZA=
 github.com/openshift/prom-label-proxy v0.1.1-0.20191016113035-b8153a7f39f1/go.mod h1:p5MuxzsYP1JPsNGwtjtcgRHHlGziCJJfztff91nNixw=
-github.com/openshift/velero v0.10.2-0.20261016203254-8ee6993b52f5 h1:xeEz8Ow11fjz0spJTC/mvuJ2nzaW1WpwAUdHcIrFCdc=
-github.com/openshift/velero v0.10.2-0.20261016203254-8ee6993b52f5/go.mod h1:R6o9Dc7jafaOuBrSXyqRq618gk8CouTQ1XhYKVJorHw=
+github.com/openshift/velero v0.10.2-0.20261021172656-95f0016887d9 h1:75msL3V95HX7PUMSyOvNN9mv96gz7tfpKp7aZPxaTwo=
+github.com/openshift/velero v0.10.2-0.20261021172656-95f0016887d9/go.mod h1:Z932fk9dBEI50h4psDx+TNHxzmoOEf193YV7Xr6gJVU=
 github.com/opentracing-contrib/go-observer v0.0.0-20170622124052-a52f23424492/go.mod h1:Ngi6UdF0k5OKD5t5wlmGhe/EDKPoUM3BXZSSfIuJbis=
 github.com/opentracing-contrib/go-stdlib v0.0.0-20190519235532-cf7a6c988dc9/go.mod h1:PLldrQSroqzH70Xl+1DQcGnefIbqsKR7UDaiux3zV+w=
 github.com/opentracing/basictracer-go v1.0.0/go.mod h1:QfBfYuafItcjQuMwinw9GhYKwFXS9KnPs5lxoYwgW74=
