@@ -2,6 +2,7 @@
 
 aliases:
   approvers:
+      - akarol
       - brybacki
       - aglitke
       - awels
@@ -14,6 +15,7 @@ aliases:
       - kaovilai
       - PrasadJoshi12
   code-reviewers:
+      - akarol
       - tbaransk
       - aglitke
       - awels
