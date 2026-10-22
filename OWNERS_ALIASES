@@ -2,6 +2,7 @@
 
 aliases:
   approvers:
+      - akarol
       - brybacki
       - aglitke
       - awels
@@ -10,7 +11,12 @@ aliases:
       - alromeros
       - sseago
       - shubham-pampattiwar
+      - weshayutin
+      - mpryc
+      - kaovilai
+      - PrasadJoshi12
   code-reviewers:
+      - akarol
       - tbaransk
       - aglitke
       - awels
@@ -21,3 +27,7 @@ aliases:
       - alromeros
       - sseago
       - shubham-pampattiwar
+      - weshayutin
+      - mpryc
+      - kaovilai
+      - PrasadJoshi12
