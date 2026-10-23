@@ -2,12 +2,20 @@
 
 aliases:
   approvers:
+      - akarol
       - brybacki
       - aglitke
       - awels
       - mhenriks
       - ShellyKa13
+      - sseago
+      - shubham-pampattiwar
+      - weshayutin
+      - mpryc
+      - kaovilai
+      - PrasadJoshi12
   code-reviewers:
+      - akarol
       - tbaransk
       - aglitke
       - awels
@@ -15,3 +23,9 @@ aliases:
       - maya-r
       - ShellyKa13
       - brybacki
+      - sseago
+      - shubham-pampattiwar
+      - weshayutin
+      - mpryc
+      - kaovilai
+      - PrasadJoshi12
