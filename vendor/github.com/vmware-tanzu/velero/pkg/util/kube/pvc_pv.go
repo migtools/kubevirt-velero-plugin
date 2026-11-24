@@ -467,13 +467,13 @@ func DiagnosePV(pv *corev1api.PersistentVolume) string {
 }
 
 func GetPVCAttachingNodeOS(pvc *corev1api.PersistentVolumeClaim, nodeClient corev1client.CoreV1Interface,
-	storageClient storagev1.StorageV1Interface, log logrus.FieldLogger) string {
+	storageClient storagev1.StorageV1Interface, log logrus.FieldLogger) (string, error) {
 	var nodeOS string
 	var scFsType string
 
 	if pvc.Spec.VolumeMode != nil && *pvc.Spec.VolumeMode == corev1api.PersistentVolumeBlock {
 		log.Infof("Use linux node for block mode PVC %s/%s", pvc.Namespace, pvc.Name)
-		return NodeOSLinux
+		return NodeOSLinux, nil
 	}
 
 	if pvc.Spec.VolumeName == "" {
@@ -485,53 +485,53 @@ func GetPVCAttachingNodeOS(pvc *corev1api.PersistentVolumeClaim, nodeClient core
 	}
 
 	nodeName := ""
-	if pvc.Spec.VolumeName != "" {
-		if n, err := GetPVAttachedNode(context.Background(), pvc.Spec.VolumeName, storageClient); err != nil {
-			log.WithError(err).Warnf("Failed to get attached node for PVC %s/%s", pvc.Namespace, pvc.Name)
-		} else {
+	if value := pvc.Annotations[KubeAnnSelectedNode]; value != "" {
+		nodeName = value
+	}
+
+	if nodeName == "" {
+		if pvc.Spec.VolumeName != "" {
+			n, err := GetPVAttachedNode(context.Background(), pvc.Spec.VolumeName, storageClient)
+			if err != nil {
+				return "", errors.Wrapf(err, "error to get attached node for PVC %s/%s", pvc.Namespace, pvc.Name)
+			}
+
 			nodeName = n
 		}
 	}
 
-	if nodeName == "" {
-		if value := pvc.Annotations[KubeAnnSelectedNode]; value != "" {
-			nodeName = value
-		}
-	}
-
 	if nodeName != "" {
-		if os, err := GetNodeOS(context.Background(), nodeName, nodeClient); err != nil {
-			log.WithError(err).Warnf("Failed to get os from node %s for PVC %s/%s", nodeName, pvc.Namespace, pvc.Name)
-		} else {
-			nodeOS = os
+		os, err := GetNodeOS(context.Background(), nodeName, nodeClient)
+		if err != nil {
+			return "", errors.Wrapf(err, "error to get os from node %s for PVC %s/%s", nodeName, pvc.Namespace, pvc.Name)
 		}
+
+		nodeOS = os
 	}
 
 	if pvc.Spec.StorageClassName != nil {
-		if sc, err := storageClient.StorageClasses().Get(context.Background(), *pvc.Spec.StorageClassName, metav1.GetOptions{}); err != nil {
-			log.WithError(err).Warnf("Failed to get storage class %s for PVC %s/%s", *pvc.Spec.StorageClassName, pvc.Namespace, pvc.Name)
-		} else if sc.Parameters != nil {
+		sc, err := storageClient.StorageClasses().Get(context.Background(), *pvc.Spec.StorageClassName, metav1.GetOptions{})
+		if err != nil {
+			return "", errors.Wrapf(err, "error to get storage class %s", *pvc.Spec.StorageClassName)
+		}
+
+		if sc.Parameters != nil {
 			scFsType = strings.ToLower(sc.Parameters["csi.storage.k8s.io/fstype"])
 		}
 	}
 
 	if nodeOS != "" {
-		log.Infof("Deduced node os %s from selected/attached node for PVC %s/%s (fsType %s)", nodeOS, pvc.Namespace, pvc.Name, scFsType)
-		return nodeOS
+		log.Infof("Deduced node os %s from selected node for PVC %s/%s (fsType %s)", nodeOS, pvc.Namespace, pvc.Name, scFsType)
+		return nodeOS, nil
 	}
 
 	if scFsType == "ntfs" {
-		log.Infof("Deduced Windows node os from fsType %s for PVC %s/%s", scFsType, pvc.Namespace, pvc.Name)
-		return NodeOSWindows
-	}
-
-	if scFsType != "" {
-		log.Infof("Deduced linux node os from fsType %s for PVC %s/%s", scFsType, pvc.Namespace, pvc.Name)
-		return NodeOSLinux
+		log.Infof("Deduced Windows node os from fsType for PVC %s/%s", pvc.Namespace, pvc.Name)
+		return NodeOSWindows, nil
 	}
 
 	log.Warnf("Cannot deduce node os for PVC %s/%s, default to linux", pvc.Namespace, pvc.Name)
-	return NodeOSLinux
+	return NodeOSLinux, nil
 }
 
 func GetPVAttachedNode(ctx context.Context, pv string, storageClient storagev1.StorageV1Interface) (string, error) {
